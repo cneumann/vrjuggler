@@ -28,7 +28,7 @@ function(sonix_add_backend _backend_name)
 
 	target_link_libraries(${_backend_name}_snd sonix)
 	set_target_properties(${_backend_name}_snd PROPERTIES FOLDER "Sonix backends")
-	add_dependencies(sonix_backends ${_backend_name}_drv)
+	add_dependencies(sonix_backends ${_backend_name}_snd)
 
 	foreach(buildtype RELEASE MINSIZEREL RELWITHDEBINFO DEBUG)
 		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${buildtype} "${BASELIBDIR}/${${buildtype}_DIR}")
