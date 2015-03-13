@@ -31,6 +31,7 @@
 #include <plugins/RIMPlugin/RIMPlugin.h>
 
 // Sharing Devices
+#include <gadget/Type/Analog.h>
 #include <gadget/Type/BaseTypeFactory.h>
 #include <gadget/Type/DeviceFactory.h>
 #include <gadget/InputManager.h>
@@ -243,7 +244,8 @@ void RIMPlugin::handlePacket(cluster::PacketPtr packet, gadget::NodePtr node)
             if ( NULL != input_dev.get() )
             {
                vprDEBUG(gadgetDBG_RIM,vprDBG_CONFIG_LVL) << clrOutBOLD(clrRED, "ERROR:")
-               << "Somehow we already have a virtual device named: " << device_name << std::endl << vprDEBUG_FLUSH;
+                  << "Somehow we already have a virtual device named: "
+                  << device_name << std::endl << vprDEBUG_FLUSH;
             }
             else
             {
@@ -255,6 +257,31 @@ void RIMPlugin::handlePacket(cluster::PacketPtr packet, gadget::NodePtr node)
                input_dev = getVirtualDevice(device_name);
                vprASSERT(NULL != input_dev.get() && "Can't have a NULL device.");
                gadget::InputManager::instance()->addRemoteDevice(input_dev, device_name);
+
+               // obtain config element for device
+               jccl::ConfigElementPtr dev_cfg =
+                  jccl::ConfigManager::instance()->getElementNamed(device_name);
+
+               if ( NULL != dev_cfg.get() )
+               {
+                  // XXX FIXME: calling input_dev->config(dev_cfg) would be
+                  // much preferred, but since input_dev is multiply inherited
+                  // from Analog, Digital, etc. that does not call the
+                  // base types config() member function.
+                  gadget::Analog* analog_dev = dynamic_cast<gadget::Analog*>(input_dev.get());
+                  if ( analog_dev != NULL )
+                  {
+                     analog_dev->config(dev_cfg);
+                  }
+               }
+               else
+               {
+                  vprDEBUG(gadgetDBG_RIM,vprDBG_CONFIG_LVL)
+                     << clrOutBOLD(clrRED, "ERROR:")
+                     << "[RIMPlugin::handlePacket] No config element found for device '"
+                     << device_name << "'!\n"
+                     << vprDEBUG_FLUSH;
+               }
             }
             break;
          }
