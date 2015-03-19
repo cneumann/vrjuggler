@@ -264,23 +264,14 @@ void RIMPlugin::handlePacket(cluster::PacketPtr packet, gadget::NodePtr node)
 
                if ( NULL != dev_cfg.get() )
                {
-                  // XXX FIXME: calling input_dev->config(dev_cfg) would be
-                  // much preferred, but since input_dev is multiply inherited
-                  // from Analog, Digital, etc. that does not call the
-                  // base types config() member function.
-                  gadget::Analog* analog_dev = dynamic_cast<gadget::Analog*>(input_dev.get());
-                  if ( analog_dev != NULL )
-                  {
-                     analog_dev->config(dev_cfg);
-                  }
+                  input_dev->config(dev_cfg);
                }
                else
                {
                   vprDEBUG(gadgetDBG_RIM,vprDBG_CONFIG_LVL)
                      << clrOutBOLD(clrRED, "ERROR:")
-                     << "[RIMPlugin::handlePacket] No config element found for device '"
-                     << device_name << "'!\n"
-                     << vprDEBUG_FLUSH;
+                     << "[RIMPlugin::handlePacket] No config element found for device named "
+                     << device_name << "\n" << vprDEBUG_FLUSH;
                }
             }
             break;
