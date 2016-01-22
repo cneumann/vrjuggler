@@ -62,7 +62,7 @@ endif()
 
 check_include_file_cxx(sys/ipc.h HAVE_SYS_IPC_H)
 check_include_file_cxx(sys/shm.h HAVE_SYS_SHM_H)
-if(HAVE_SYS_IPC_H AND HAVE_SYS_SHM_H)
+if(HAVE_SYS_IPC_H AND HAVE_SYS_SHM_H OR WIN32)
 	add_subdirectory(Open/Trackd)
 endif()
 
